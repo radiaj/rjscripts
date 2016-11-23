@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -l nodes=1:m48G
+#PBS -l walltime=47:58:00
+#PBS -N starIndex01
+#PBS -r n
+#PBS -A bap-052-aa
+
+cd /RQusagers/johnsonr/PARK_LAB/scripts
+
+./runSTARindex.sh
