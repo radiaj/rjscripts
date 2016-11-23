@@ -14,15 +14,6 @@ myGENOMEDIR="/RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes"
 count=0
 
 #------------------------------------------------------------------------------
-## Run once after you can comment the line or remove it from your script ##
-#------------------------------------------------------------------------------
-# Go to the STAR directory
-# cd "${myGENOMEDIR}"
-
-# Build a STAR genome index into the Chromosomes folder
-# STAR  --runMode genomeGenerate --genomeDir ./ --genomeFastaFiles hg19.fa --runThreadN 4 --sjdbGTFfile /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf  --sjdbOverhang 10
-
-#------------------------------------------------------------------------------
 ## Run from here for all samples 
 #------------------------------------------------------------------------------
 # Go to the directory with your scripts
