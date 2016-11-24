@@ -1,9 +1,9 @@
 #!/bin/bash
 #PBS -l nodes=1:m48G
-#PBS -l walltime=30:00:00
-#PBS -N star112416brian
+#PBS -l walltime=47:58:00
+#PBS -N starIndex01
 #PBS -r n
-#PBS -A uaw-134-aa
+#PBS -A bap-052-aa
 
 cd /RQexec/johnsonr/JONES_LAB/scripts/
 ./starINDEXmus.sh
