@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Add the modules needed for the analysis
-module add STAR
+module add STAR/2.4.2
 module add SAMtools
 
 # Variables
@@ -21,7 +21,7 @@ while read mySIZE
 
                 mkdir "${mySIZE}"_STAR1
                 cd "${mySIZE}"_STAR1
-                STAR --genomeDir /RQexec/johnsonr/Mus_musculus/UCSC/mm10/Sequence/Chromosomes/  --runThreadN 4 --readFilesIn "${myDIR}"/"${mySIZE}"*1.f*q.gz "${myDIR}"/"${mySIZE}"*2.f*q.gz --readFilesCommand zcat --outFileNamePrefix "${mySIZE}"
+                STAR --genomeDir /RQexec/johnsonr/Mus_musculus/UCSC/mm10/Sequence/Chromosomes/  --quantMode GeneCounts  --runThreadN 4 --readFilesIn "${myDIR}"/"${mySIZE}"*1.f*q.gz "${myDIR}"/"${mySIZE}"*2.f*q.gz --readFilesCommand zcat --outFileNamePrefix "${mySIZE}"
 
 done < $FILENAME
 
