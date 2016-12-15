@@ -2,7 +2,11 @@
 
 # Variables
 FILENAME=$1
+myFILEDIR="${2:-${PWD}}"
 count=0
+
+cd "${myFILEDIR}"
+cp ~/Trimmomatic-0.36/adapters/*.fa .
 
 while read pre
         do
