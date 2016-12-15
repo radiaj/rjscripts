@@ -7,6 +7,7 @@ count=0
 
 cd "${myFILEDIR}"
 cp ~/Trimmomatic-0.36/adapters/*.fa .
+mkdir logs
 
 while read pre
         do
