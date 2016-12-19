@@ -1,11 +1,11 @@
 #!/bin/bash
-# Add the modules
 
 #Variables
 myDate1=`date "+%m%d%y"`
 FILENAME=$1
-myDIR=$2
-myRNAdir=$3
+myRNAdir=$2
+myDIR="${3:-${PWD}}"
+
 count=0
 
 cd "${myDIR}"/
