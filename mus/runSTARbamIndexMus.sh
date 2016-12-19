@@ -33,7 +33,7 @@ while read mySIZE
 t --outFileNamePrefix "${mySIZE}"
 
                 # Create bam index file
-                samtools index "${mySIZE}"Aligned.sortedByCoord.out.bam.bam "${mySIZE}"Aligned.sortedByCoord.out.bam.bai
+                samtools index "${mySIZE}"Aligned.sortedByCoord.out.bam "${mySIZE}"Aligned.sortedByCoord.out.bam.bai
 
 done < $FILENAME
 
