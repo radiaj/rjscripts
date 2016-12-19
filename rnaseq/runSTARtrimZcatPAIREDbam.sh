@@ -29,11 +29,9 @@ while read mySIZE
                 # Create a sorted BAM files
                 cd "${mySIZE}"_STAR
 
-                STAR --genomeDir /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes  --quantMode GeneCounts --runThreadN 4 --outSAMtype BAM SortedByCoordinate --readFilesIn "${myDIR}"/"${mySIZE}"*1.trim.f*q.gz "${myDIR}"/"${my\
+                STAR --genomeDir /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes  --quantMode GeneCounts --runThreadN 4 --outSAMtype BAM Unsorted --readFilesIn "${myDIR}"/"${mySIZE}"*1.trim.f*q.gz "${myDIR}"/"${my\
 SIZE}"*2.trim.f*q.gz --readFilesCommand zcat --outFileNamePrefix "${mySIZE}"
 
-                # Create index file to view bam in IGV
-                samtools index "${mySIZE}"Aligned.sortedByCoord.out.bam.bam "${mySIZE}"Aligned.sortedByCoord.out.bam.bai
 
 done < $FILENAME
 
