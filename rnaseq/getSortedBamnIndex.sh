@@ -27,3 +27,4 @@ done < $FILENAME
 echo -e "\nTotal $count lines read"
 
 wait
+
