@@ -19,7 +19,7 @@ while read mySIZE
                 cd "${myFILEDIR}"/"${mySIZE}"_STAR/
 
                 # Convert the sam file directly to a sorted bam file
-                samtools sort "${mySIZE}"*.bam "${mySIZE}"_sorted
+                samtools sort  -o "${mySIZE}"_sorted.bam -O bam "${mySIZE}"Aligned.out.bam
                 samtools index "${mySIZE}"_sorted.bam "${mySIZE}"_sorted.bai &
 
 done < $FILENAME
@@ -27,4 +27,7 @@ done < $FILENAME
 echo -e "\nTotal $count lines read"
 
 wait
+
+
+
 
