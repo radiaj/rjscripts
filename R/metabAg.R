@@ -150,5 +150,92 @@ lapply(MetaTotalPool, head)
 saveRDS(MetaTotalPool, "posMetaTotalPool.rds")
 
 # 
+#=====================================================
+# To run DEG analysis on total pool by 13C label
+#=====================================================
+# Restart from here
+# Load the functions above
+# setwd("~/Documents/agios data/positiveIon")
+# MetaTotalPool <- readRDS("posMetaTotalPool.rds")
+
+library("edgeR")
+library("gdata")
+SampDetails <- read.delim("../SampleDetails.txt", row.names=1)
+
+# 13C-Glucose, Glutamine, Acetate --------------------------------------------------------
+gluc13c <- grep("GLUCOSE", names(MetaTotalPool))
+glutamine13c <- grep("GLUTAMINE", names(MetaTotalPool))
+acetate13c <- grep("ACETATE", names(MetaTotalPool))
+#-------------------------------------------------------------
+LAB13C="ACETATE"
+xx <- acetate13c # Change according to the 13C label of interest
+# CREATE A FUNCTION To RETURN xx
+
+M1 <- getMetaboliteTotalPool(label13c=xx, LABEL=LAB13C)
+
+samptested <- sapply(strsplit(colnames(M1), "_"), function(x) x[[1]])
+subsetested <- sapply(strsplit(colnames(M1), "_"), function(x) x[[2]])
+timep <- SampDetails[samptested, 2]
+gg <- paste(subsetested,  timep, sep="_")
+grp <- factor(paste(subsetested,  timep, sep="_"), levels=unique(gg))
+
+M2 <- apply(M1, c(1, 2), function(x) ifelse(is.na(x), 0, x))
+M3 <- apply(M2, c(1, 2), function(x) ifelse(x < 0, 0, x))
+
+y <- DGEList(counts=M3, group=grp)
+y <- calcNormFactors(y, method="none")
+design <- model.matrix(~0 + grp)
+y <- estimateDisp(y,design)
+
+M4 <- cpm(y, log=TRUE)
+par(mar=c(12, 3.5, 2, 1))
+boxplot(M4, col="cyan", las=2, cex.axis=0.7)
+
+#---------------------------------------------------
+# Get the differentially expressed metabolites
+#---------------------------------------------------
+
+y <- DGEList(counts=M3, group=grp)
+y <- calcNormFactors(y, method="none")
+design <- model.matrix(~0 + grp)
+y <- estimateDisp(y,design)
+
+colnames(design)
+
+# Save the results
+RES <- list()
+BvsA <- makeContrasts(grpnaive_6 - grpnaive_2.5,  levels=design)
+yy <- paste(LAB13C, "_Naive_Day6_vs_2", sep="")
+RES[[yy]]<- getMetaboliteGLMres(y, SampVsCtrl=BvsA, LABEL_13C = yy)
+# For the other pairwise comparisons
+BvsA <- makeContrasts(grpthy1_2.5 - grpnaive_2.5,  levels=design)
+yy <- paste(LAB13C, "_Thy1_1_vs_Naive_Day2", sep="")
+RES[[yy]]<- getMetaboliteGLMres(y, SampVsCtrl=BvsA, LABEL_13C = yy)
+
+BvsA <- makeContrasts(grpthy1_6 - grpthy1_2.5,  levels=design)
+yy <- paste(LAB13C, "_Thy1_1_Day6_vs_2", sep="")
+RES[[yy]] <- getMetaboliteGLMres(y, SampVsCtrl=BvsA, LABEL_13C = yy)
+
+BvsA <- makeContrasts(grpthy1_6 - grpnaive_6,  levels=design)
+yy <- paste(LAB13C, "_Thy1_1_vs_Naive_Day6", sep="")
+RES[[yy]] <- getMetaboliteGLMres(y, SampVsCtrl=BvsA, LABEL_13C = yy)
+
+# For the Volcano plots
+# To run for all 
+for(i in c(2, 4)){
+	pp <- getVolcanoPlot13C_TotalPools(RES[[i]])
+	ggsave(paste(names(RES)[i],".png", sep=""))
+}
+
+for(i in c(1, 3)){
+	pp <- getVolcanoPlot13CByDayComp(RES[[i]])
+	ggsave(paste(names(RES)[i],".png", sep=""))
+}
+
+# For the positive ion mode
+for(i in c(1:4)){
+	pp <- getVolcanoPlot13CByDayComp(RES[[i]])
+	ggsave(paste(names(RES)[i],".png", sep=""))
+}
 
 
