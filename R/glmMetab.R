@@ -3,7 +3,7 @@
 # By Radia Johnson, Ph.D.
 # Date: January 17th, 2017
 #=========================================
-source("/Users/radiamariejohnson/rjcode/repos/r-functions/generalfunctionsdata.R")
+source("~/rjcode/repos/r-functions/generalfunctionsdata.R")
 library("gdata")
 list.files()
 
