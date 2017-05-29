@@ -1,0 +1,63 @@
+# To prepare for BOWTIE alignment with precursor miR
+
+$ module add fastx_tools/0.0.13
+
+$ cd /RQusagers/johnsonr/miRNA_reference
+$ fasta_formatter -i hairpin.fa -o hairpin2.fa -w 0
+$ fasta_formatter -i mature.fa -o mature2.fa -w 0
+$ tr 'U' 'T' < hairpin2.fa > hairpindna2.fa
+
+# Convert U to T for bowtie
+$ tr 'U' 'T' < hairpin.fa > hairpindna.fa
+# fasta_nucleotide_changer  -i hairpin2.fa -o hairpindna.fa -d # doesn't work with Y and other nuclueotide sequence
+
+# Create reads fasta file for quantifier (test)
+$ cd /exec5/GROUP/johnsonr/johnsonr/DUCHAINE_LAB/fl_17-92Precursor
+$ fastq_to_fasta -i fl_17-92Precursor.fq -o fl_17-92Precursor.fa -v
+Input: 55796966 reads.
+Output: 55336058 reads.
+discarded 460908 (0%) low-quality reads.
+
+# To run alignment onto hairpin precursor-miRNA sequences WORKS!!!
+# GETS A SAM FILE OF THE UNMAPPED READS WITH BOWTIE --un option unmapped.fq
+# ./runBowtie_miRNApairedHP.sh precursors051616.txt "/exec5/GROUP/johnsonr/johnsonr/DUCHAINE_LAB" # WORKS
+$ cd /RQusagers/johnsonr/PARK_LAB/scripts
+$ qsub bwHPalign.pbs
+# ran on matures 05/25/2016
+./runBowtie_miRNApairedHP.sh mature052516.txt "/exec5/GROUP/johnsonr/johnsonr/DUCHAINE_LAB"
+
+# reads processed: 55695900
+# reads with at least one reported alignment: 92857 (0.17%)
+# reads that failed to align: 55603043 (99.83%)
+Reported 96039 alignments to 1 output stream(s)
+# reads processed: 55796966
+# reads with at least one reported alignment: 68306 (0.12%)
+# reads that failed to align: 55728660 (99.88%)
+Reported 74574 alignments to 1 output stream(s)
+# reads processed: 54046018
+# reads with at least one reported alignment: 30330 (0.06%)
+# reads that failed to align: 54015688 (99.94%)
+Reported 43025 alignments to 1 output stream(s)
+
+module add mirdeep2/2.0.0.5
+module add bowtie/0.12.7
+
+# Convert mapped sam to fasta 
+cat OV_17-92Precursor_bowtie.sam | grep -v ^@  | awk '{print ">"$1" "$2"\n"$6}' > OV_17-92Pre.mapped.fa
+mapper.pl OV_17-92Pre.mapped.fa -p /RQusagers/johnsonr/miRNA_reference/hairpindna -c -m -s OV_17-92Pre.mapped.fa.collapsed -t OV_17-92Pre.mapped.arf -n 
+
+# reads processed: 4899
+# reads with at least one reported alignment: 3399 (69.38%)
+# reads that failed to align: 1427 (29.13%)
+# reads with alignments suppressed due to -m: 73 (1.49%)
+Reported 3494 alignments to 1 output stream(s)
+Mapping statistics
+
+#desc   total   mapped  unmapped        %mapped %unmapped
+total: 96039    87237   8802    0.908   0.092
+seq: 96039      87237   8802    0.908   0.092
+
+~/mirdeep2_core-master/quantifier.pl -p /RQusagers/johnsonr/miRNA_reference/hairpindna.fa -m /RQusagers/johnsonr/miRNA_reference/mature.fa -r OV_17-92Pre.mapped.fa.collapsed -t mmu -y OV_17-92 -e 15 
+
+
+
