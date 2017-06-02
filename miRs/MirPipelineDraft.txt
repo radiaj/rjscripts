@@ -2,6 +2,7 @@
 
 $ module add fastx_tools/0.0.13
 
+You can download the hairpin.fa file from http://www.mirbase.org/ftp.shtml
 $ cd /RQusagers/johnsonr/miRNA_reference
 $ fasta_formatter -i hairpin.fa -o hairpin2.fa -w 0
 $ fasta_formatter -i mature.fa -o mature2.fa -w 0
