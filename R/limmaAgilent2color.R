@@ -35,33 +35,6 @@ RG2 <- read.maimages(targets$Filename, source="agilent") # median signal used
 show(RG2)
 summary(RG2$R)
 
-# Pre-processing and normalizing the data
-preProcessAndNormalize <- function(RG) {
-    RG.within <- normalizeWithinArrays(RG, method="loess", bc.method="none")
-    RG.norm <- normalizeBetweenArrays(RG.within, method="quantile")
-    RG.norm <- RG.norm[RG.norm$genes$ControlType == 0, ] # remove the control probes
-    agg.M <- aggregate(RG.norm$M,list(RG.norm$genes$ProbeName),function(x) mean(x,na.rm=T))
-    agg.A <- aggregate(RG.norm$A,list(RG.norm$genes$ProbeName),function(x) mean(x,na.rm=T))
-   	RG.norm <- RG.norm[!duplicated(RG.norm$genes$ProbeName),]
-    RG.norm$M <- agg.M[match(RG.norm$genes$ProbeName,agg.M[,1]),2:ncol(agg.M)]
-    RG.norm$A <- agg.A[match(RG.norm$genes$ProbeName,agg.A[,1]),2:ncol(agg.M)]
-
-    return(RG.norm)
-}
-
-
-RG1.norm <- preProcessAndNormalize(RG)
-RG2.norm <- preProcessAndNormalize(RG2)
-
-
-# AIMS
-#The idea will be to reanalyse old LCM data we have collected (agilent microarrays) and to look at the metabolic aspect.
-#Seb had injected 2 cell lines (2776 and 2792) in mammary fat pad and look at the primary tumor or in splenic looking at the liver metastases.
-#In the mammary fat pad, we have data for the core and for the margin.
-#In the liver metastases, we have data for the tumor cells (core vs margin) and also for the liver (adjacent vs distal) for various time (10days, 2 weeks and 3 weeks).
-#I am interested in the glutamine and glucose metabolism and particularly in the lipid metabolism.
-
-
 preProcessAndNormalize <- function(RG) {
                 RG.within <- normalizeWithinArrays(RG, method="loess", bc.method="none")
                 RG.norm <- normalizeBetweenArrays(RG.within, method="quantile")
@@ -75,6 +48,10 @@ preProcessAndNormalize <- function(RG) {
 #             res = list(RG.norm, agg.M, agg.A)
                return(RG.norm)
 }
+
+RG1.norm <- preProcessAndNormalize(RG)
+RG2.norm <- preProcessAndNormalize(RG2)
+
 
 ################################ 
 # Extract the gene expression data
