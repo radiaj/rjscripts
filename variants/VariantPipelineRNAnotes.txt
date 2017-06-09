@@ -1,0 +1,102 @@
+GATK tools installation:
+cd $HOME
+tar xjf GenomeAnalysisTK-3.5.tar.bz2
+
+STEP 0
+# Generate the STAR index in /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/
+
+# Generate the fasta file index
+samtools faidx Homo_sapiens_assembly18.fasta 
+
+From <http://gatkforums.broadinstitute.org/gatk/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference> 
+
+module add SAMtools
+cd /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/
+samtools faidx /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/hg19.fa
+
+$ samtools faidx /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/hg19.fa 
+
+# Generate the fasta sequence dictionary file
+java -jar CreateSequenceDictionary.jar R= Homo_sapiens_assembly18.fasta O= Homo_sapiens_assembly18.dict
+
+From <http://gatkforums.broadinstitute.org/gatk/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference> 
+
+cd /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/
+java -jar $HOME/picard-tools-1.119/CreateSequenceDictionary.jar R= hg19.fa O= hg19.dict
+
+STEP 1
+# RUN STAR to align the reads to the genome
+# Generates a sam file
+./runSTARindexAlign.sh patients001.txt "/RQexec/johnsonr/PARK_LAB/RNAseq"
+$ qsub test2.pbs
+ 
+# For the 2-pass STAR, a new index is then created using splice junction information contained in the file SJ.out.tab from the first pass (not done on 1st pass analysis)
+
+genomeDir=/path/to/hg19_2pass
+mkdir $genomeDir
+STAR --runMode genomeGenerate --genomeDir $genomeDir --genomeFastaFiles hg19.fa \
+    --sjdbFileChrStartEnd /path/to/1pass/SJ.out.tab --sjdbOverhang 75 --runThreadN <n>
+
+runDir=/path/to/2pass
+mkdir $runDir
+cd $runDir
+STAR --genomeDir $genomeDir --readFilesIn mate1.fq mate2.fq --runThreadN <n>
+
+From <https://www.broadinstitute.org/gatk/guide/article?id=3891> 
+
+STEP 2
+# The above step produces a SAM file, which we then put through the usual Picard processing steps: adding read group information, sorting, marking duplicates and indexing. In runPICARDprocessing.sh
+# -z noexecstack, test with the module by removing the path $HOME/…
+cd /RQexec/johnsonr/PARK_LAB/STAR/"${mySIZE}"_STAR1
+
+java -jar picard.jar AddOrReplaceReadGroups I="${mySIZE}"Aligned.out.sam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=platform RGPU=machine RGSM=sample 
+
+java -jar picard.jar MarkDuplicates I=rg_added_sorted.bam O=dedupped.bam  CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics 
+
+./runPICARDprocessing.sh patients001.txt
+$ qsub runPicard012216.pbs # worked
+
+#==============================
+# To run on all patients: PART1 script can be run on the cluster
+ (tested 6 patients, Feb 2nd 2016)
+$ cd /RQexec/johnsonr/PARK_LAB/STAR
+$ ls  > variantsFeb2_2016.txt
+$ sed -i -e 's/_STAR1//g' variantsFeb2_2016.txt
+$ mv variantsFeb2_2016.txt /RQusagers/johnsonr/PARK_LAB/scripts
+
+# TEST ./runVariantPROCESSING.sh "variantsFeb2_2016.txt" in variants.pbs 
+$ qsub variants.pbs # DID NOT COMPLETELY WORK …will need to run the rest in the terminal
+$  ./runVariantPROCESSING_PT2.sh "variantsFeb2_2016.txt" Will need to run part2 seperately
+
+
+STEP 3
+
+# TEST RUN
+$ cd /RQexec/johnsonr/PARK_LAB/STAR/V03-370-1T_STAR1
+$ module add Java/1.8.0_40
+$ module add GATK/3.3-0
+
+# Split'N'Trim and reassign mapping qualities
+$ cd /RQexec/johnsonr/PARK_LAB/STAR/V04-570-1T_STAR1
+java -jar $HOME/GenomeAnalysisTK.jar -T SplitNCigarReads -R /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/hg19.fa -I dedupped.bam -o split.bam -rf ReassignOneMappingQuality -RMQF 255 -RMQT 60 -U ALLOW_N_CIGAR_READS # running in terminal but not on node and BASH script (3hrs)
+
+# TEST ON CLUSTER (did not work)
+$ cd /RQusagers/johnsonr/PARK_LAB/scripts
+./runPICARDprocessing.sh patients001.txt
+$ qsub runPicard012216.pbs
+
+STEP 6
+ cd /RQexec/johnsonr/PARK_LAB/STAR/V03-370-1T_STAR1
+java -jar $HOME/GenomeAnalysisTK.jar -T HaplotypeCaller -R /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/hg19.fa -I split.bam -dontUseSoftClippedBases -stand_call_conf 20.0 -stand_emit_conf 20.0 -o V04-570-1Toutput.vcf # running in terminal (2hrs)
+
+# The ref.fasta file used is  /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/hg19.fa
+
+STEP 7
+ cd /RQexec/johnsonr/PARK_LAB/STAR/V04-570-1T_STAR1
+
+java -jar $HOME/GenomeAnalysisTK.jar -T VariantFiltration -R /RQexec/johnsonr/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/hg19.fa -V V04-570-1Toutput.vcf -window 35 -cluster 3 -filterName FS -filter "FS > 30.0" -filterName QD -filter "QD < 2.0" -o V04-570-1Tfiltered.vcf 
+
+
+# SCRIPT worked for V07-761-2T_STAR1 in the terminal February 5th, 2016
+cd /RQexec/johnsonr/PARK_LAB/STAR
+./runVariantPROCESSING_PT2.sh testsamp.txt # worked in the terminal
