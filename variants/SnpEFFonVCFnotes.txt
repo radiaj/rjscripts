@@ -1,0 +1,47 @@
+# Test example running SnpEFF
+$ cd /home/cyberlogic/snpEff
+$ java -Xmx4g -jar snpEff.jar GRCh37.75 examples/test.chr22.vcf > test.chr22.ann.vcf # not run
+
+Go to directory of vcf file and run the script using hg19 database
+
+$ cd /home/cyberlogic/PARK_DATA/Link to PARK_LAB/smb-share:server=jps-lab-nas.local,share=park_lab_data/PARK_LAB/STAR/V04-570-1T_STAR1
+$ java -Xmx8g -jar snpEff.jar hg19 V04-570-1Toutput.vcf > V04-570-1T.ann.vcf
+
+To run the script written to run on CYBERLOGIC
+$ nano test031416.txt
+# add V04-570-1T
+
+$ cd /home/cyberlogic/snpEff
+$ ./runSTARsamples.sh test031416.txt # works
+
+# To run on the remaining samples
+$ cd /home/cyberlogic/snpEff
+$ ls > snpEFFpat031816.txt
+$ sed -i -e 's/_STAR1//g' snpEFFpat031816.txt
+$ mv snpEFFpat031816.txt /home/cyberlogic/snpEff
+$ ./runSTARsamples.sh  snpEFFpat031816.txt
+
+To run snpEFF on TNBC samples using the filtered file
+$ cd /home/cyberlogic/snpEff
+$ ls > snpEFFpat032416.txt
+$ sed -i -e 's/_STAR1//g' snpEFFpat032416.txt
+$ mv snpEFFpat032416.txt /home/cyberlogic/snpEff
+$ nano snpEFFpat032416.txt
+$ ./runSNPeff_filtrd.sh  snpEFFpat032416.txt
+
+For the test run:
+head -n 1 snpEFFpat032416.txt > test032416.txt
+$ ./runSNPeff_filtrd.sh test032416.txt
+$ ./runSNPeff_filtrd.sh snpEFFpat032416.txt
+java -Xmx8g -jar $HOME/snpEff/snpEff.jar  hg19 G2001-209-03Tfiltered.vcf -csvStats G2001-209-03Tcsv -stats G2001-209-03T -c /home/cyberlogic/snpEff/snpEff.config > G2001-209-03T.ann.vcf
+
+ java -Xmx8g -jar $HOME/snpEff/snpEff.jar count hg19 dedupped.bam  -c /home/cyberlogic/snpEff/snpEff.config > "${mySIZE}".countReads.txt # VERY SLOW might want to run on cluster?? Tried in variantsXX.pbs (will run on Tuesday)
+
+
+To realign the Female BC fastq files to genome without ChrY
+# On CYBERLOGIC create gzip versions of the files and remove the fastq files
+sed -i -e 's/.fa//g' TNBCsamples.txt
+$... "/home/cyberlogic/PARK_DATA/Link to PARK_LAB/PARK_NAS_SERVER/PARK_LAB/BCFGG_Data_Collection/Fastq_FilesTNBC_BEDTOOLS"
+
+# Added the snpEff.jar to the variants pipeline
+/RQusagers/johnsonr/snpEff
