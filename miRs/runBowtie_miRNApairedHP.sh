@@ -42,7 +42,7 @@ while read mySIZE
                 bowtie -n 1 -l 8 -a --best --strata --phred33-quals -p 4 --un "${mySIZE}"_unmapped.fq "${myMIR}"/hairpindna_bowtie "${mySIZE}".fq "${mySIZE}"_bowtie.sam
 
                 # Try quantifier script from mirDeep2
-                # Convert the sam file to a bam file
+                # Convert the sam file to a fasta file
                 cat "${mySIZE}"_bowtie.sam | grep -v ^@  | awk '{print ">"$1" "$2"\n"$6}' > "${mySIZE}".mapped.fa
 
                 # Run the mapper on the mapped fasta file
