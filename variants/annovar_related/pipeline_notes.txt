@@ -1,0 +1,34 @@
+$ cd /RQusagers/johnsonr/annovar
+
+DOWNLOAD the ANNOVAR files
+
+./annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene humandb/
+
+./annotate_variation.pl -buildver hg19 -downdb cytoBand humandb/
+
+./annotate_variation.pl -buildver hg19 -downdb genomicSuperDups humandb/ 
+
+ ./annotate_variation.pl -buildver hg19 -downdb -webfrom annovar esp6500siv2_all humandb/
+
+./annotate_variation.pl -buildver hg19 -downdb -webfrom annovar 1000g2014oct humandb/
+
+ ./annotate_variation.pl -buildver hg19 -downdb -webfrom annovar snp138 humandb/ 
+
+ ./annotate_variation.pl -buildver hg19 -downdb -webfrom annovar ljb26_all humandb/
+
+./table_annovar.pl /RQexec/johnsonr/SID_LAB/HCC21_S1/HCC21_S1_output.raw.snps.indels.vcf humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,genomicSuperDups,esp6500siv2_all,1000g2014oct_all,1000g2014oct_afr,1000g2014oct_eas,1000g2014oct_eur,snp138,ljb26_all -operation g,r,r,f,f,f,f,f,f,f -nastring . -csvout
+
+# From <http://annovar.openbioinformatics.org/en/latest/user-guide/startup/> 
+
+TO GET ANNOTATED TABLES:
+
+table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,genomicSuperDups,esp6500siv2_all,1000g2014oct_all,1000g2014oct_afr,1000g2014oct_eas,1000g2014oct_eur,snp138,ljb26_all -operation g,r,r,f,f,f,f,f,f,f -nastring . -csvout
+
+table_annovar.pl example/ex2.vcf humandb/ -buildver hg19 -out myanno -remove -protocol refGene,cytoBand,genomicSuperDups,esp6500siv2_all,1000g2014oct_all,1000g2014oct_afr,1000g2014oct_eas,1000g2014oct_eur,snp138,ljb26_all -operation g,r,r,f,f,f,f,f,f,f -nastring . -vcfinput
+
+# RAN in terminal WORKED SENT THE FILES TO SID 05/05/2016
+./table_annovar.pl /RQexec/johnsonr/SID_LAB/HCC21_S1/HCC21_S1_output.raw.snps.indels.vcf ./humandb/ -buildver hg19 -out HCC21_S1 -remove -protocol refGene,cytoBand,genomicSuperDups,esp6500siv2_all,1000g2014oct_all,1000g2014oct_afr,1000g2014oct_eas,1000g2014oct_eur,snp138,ljb26_all -operation g,r,r,f,f,f,f,f,f,f -nastring .  -vcfinput
+
+./table_annovar.pl /RQexec/johnsonr/SID_LAB/12_S1/12_S1_output.raw.snps.indels.vcf ./humandb/ -buildver hg19 -out 12_S1 -remove -protocol refGene,cytoBand,genomicSuperDups,esp6500siv2_all,1000g2014oct_all,1000g2014oct_afr,1000g2014oct_eas,1000g2014oct_eur,snp138,ljb26_all -operation g,r,r,f,f,f,f,f,f,f -nastring . -vcfinput
+
+./table_annovar.pl /RQexec/johnsonr/SID_LAB/HCC-Clone23_S1/HCC-Clone23_S1_output.raw.snps.indels.vcf ./humandb/ -buildver hg19 -out HCC-Clone23_S1 -remove -protocol refGene,cytoBand,genomicSuperDups,esp6500siv2_all,1000g2014oct_all,1000g2014oct_afr,1000g2014oct_eas,1000g2014oct_eur,snp138,ljb26_all -operation g,r,r,f,f,f,f,f,f,f -nastring . -vcfinput
