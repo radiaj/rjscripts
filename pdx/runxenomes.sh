@@ -13,7 +13,7 @@ while read mySIZE myFASTQ1 myFASTQ2
                 echo "$count $mySIZE"
                 echo "fastq1 $myFASTQ1"
 
-                xenome classify -T 8 -P idx --pairs --host-name mm10 --graft-name hg19 -i ./"${myFASTQ1}" -i ./"${myFASTQ2}"
+                xenome classify -T 8 -P idx --pairs --host-name mm10 --graft-name hg19 -i ./"${myFASTQ1}" -i ./"${myFASTQ2}" --output-filename-prefix "${mySIZE}"
 
 done < $FILENAME
 
