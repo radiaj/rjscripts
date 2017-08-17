@@ -1,19 +1,22 @@
-#--------------------------
-# To run xenomes
-#--------------------------
 #!/bin/bash
 
+# Variables
+FILENAME=$1
+mytmpDIR=$2
+count=0
 
-cd /media/cyberlogic/a384d9c7-6dda-4d1b-b32d-9a6b0e007931/toto/PARK_LAB_DATA_FILES/PDX_RNAseq_Files/
-# xenome index -T 8 -P idx -H mm10.fa -G hg19.fa
+cd /user/yourDirectory
+
+# Get index files (run once only)
+xenome index -v -l index.log -T 1 -M 8 -P idx -H mouse.fa -G human.fa --tmp-dir "${mytmpDIR}"
 
 while read mySIZE myFASTQ1 myFASTQ2
-        do
-                let count++
-                echo "$count $mySIZE"
-                echo "fastq1 $myFASTQ1"
+do
+    let count++
+    echo "$count $mySIZE"
+    echo "fastq1 $myFASTQ1"
 
-                xenome classify -T 8 -P idx --pairs --host-name mm10 --graft-name hg19 -i ./"${myFASTQ1}" -i ./"${myFASTQ2}" --output-filename-prefix "${mySIZE}"
+    xenome classify -T 1 -M 8 -P idx  --tmp-dir "${mytmpDIR}" --pairs --host-name mouse --graft-name human -i ./"${myFASTQ1}" -i ./"${myFASTQ2}" --output-filename-prefix "${mySIZE}"
 
 done < $FILENAME
 
