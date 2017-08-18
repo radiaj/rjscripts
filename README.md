@@ -2,7 +2,7 @@
 Scripts to run analysis on cluster.
 
 see http://davetang.org/wiki/tiki-index.php?page=SAMTools for samtools commands
-
+```bash
 # Converting miR sequences for script use
 $ module add fastx_tools/0.0.13
 
@@ -19,7 +19,7 @@ $ tr 'U' 'T' < hairpin.fa > hairpindna.fa
 # Create reads fasta file for quantifier (test)
 $ cd /exec5/GROUP/johnsonr/johnsonr/DUCHAINE_LAB/fl_17-92Precursor
 $ fastq_to_fasta -i fl_17-92Precursor.fq -o fl_17-92Precursor.fa -v
-
+```
 Input: 55796966 reads.
 Output: 55336058 reads.
 discarded 460908 (0%) low-quality reads.
